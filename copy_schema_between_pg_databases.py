@@ -101,19 +101,19 @@ def connection_ui():
     org_schema = raw_input('\nOrigin schema name:\n')
     org_table = raw_input('\nOrigin table name:\n')
 
-    dest_server = raw_input('\nDestination server name:\n')
+    dest_server = raw_input("\nDestination server name (type 'same' to reuse server from origin):\n")
     if dest_server.lower() == 'same':
         dest_server = org_server
-    dest_db = raw_input('\nDestination databse name:\n')
+    dest_db = raw_input("\nDestination databse name (type 'same' to reuse database from origin):\n")
     if dest_db.lower() == 'same':
         dest_db = org_db
     dest_pass = None
-    dest_user = raw_input('\nDestination db login user name:\n')
+    dest_user = raw_input("\nDestination db login user name (type 'same' to reuse user name from origin):\n")
     if dest_user.lower() == 'same':
         dest_user = org_user
         dest_pass = pg_org.params['password']
     pg_dest = PostgresDb(dest_server, dest_db, dest_user, dest_pass)
-    dest_schema = raw_input('\nDestination schema name:\n')
+    dest_schema = raw_input("\nDestination schema name (type 'same' to reuse schema from origin):\n")
     if dest_schema.lower() == 'same':
         dest_schema = org_schema
     if raw_input('\nRename table? (Y/N)\n').lower() == 'y':
