@@ -1,7 +1,5 @@
-from DatabaseConnections import PostgresDb
-import csv
-from collections import namedtuple
-
+from db2 import PostgresDb
+import os
 
 def copy_schema_between_pg_databases(pg_org, pg_dest, table_name, table_schema, dest_schema=None, dest_table_name=None):
     if not dest_schema:
@@ -58,8 +56,9 @@ def add_data_to_pg(pg, dest_table_name, dest_schema=None, seperator='|'):
     with open('temp_table.csv') as f:
         cur.copy_from(f, loc_table, sep=seperator, null='')
     pg.conn.commit()
+    os.remove(os.path.join(os.getcwd(), 'temp_table.csv'))  # clean up after yourself in the folder
 
-    
+
 def copy_data_between_pg_databases(pg_org, pg_dest, table_name, table_schema, dest_schema=None, dest_table_name=None):
     if not dest_schema:
         dest_schema = 'public'
