@@ -52,7 +52,7 @@ class PostgresDb(object):
             cur.execute(qry)
             if cur.description:
                 columns = [desc[0] for desc in cur.description]
-                data = cur.fetchall()
+                data = [i[0] for i in cur.fetchall()]
             else:
                 data = None
                 columns = None
@@ -127,7 +127,7 @@ class SqlDb(object):
             cur.execute(qry)
             if cur.description:
                 columns = [desc[0] for desc in cur.description]
-                data = cur.fetchall()
+                data = [i[0] for i in cur.fetchall()]
             else:
                 data = None
                 columns = None

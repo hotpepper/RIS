@@ -24,18 +24,20 @@ def export_pg_table_to_shp(export_path, pgo, pgtable_name, pgschema=None, pg_sql
     print 'Done!'
 
 
-def import_shp_to_pg(import_shp, pgo, gdal_data=r"C:\Program Files (x86)\GDAL\gdal-data"):
+def import_shp_to_pg(import_shp, pgo, schema='public', gdal_data=r"C:\Program Files (x86)\GDAL\gdal-data"):
     cmd = 'ogr2ogr --config GDAL_DATA "{gdal_data}" -nlt PROMOTE_TO_MULTI -overwrite -a_srs ' \
           'EPSG:{srid} -progress -f "PostgreSQL" PG:"host={host} port=5432 dbname={dbname} ' \
-          'user={user} password={password}" "{shp}"'.format(gdal_data=gdal_data,
-                                                          srid='2263',
-                                                          host=pgo.params['host'],
-                                                          dbname=pgo.params['dbname'],
-                                                          user=pgo.params['user'],
-                                                          password=pgo.params['password'],
-                                                          shp=import_shp
-                                                          )
-
+          'user={user} password={password}" "{shp}" -nln {schema}.{tbl_name}'.format(
+        gdal_data=gdal_data,
+        srid='2263',
+        host=pgo.params['host'],
+        dbname=pgo.params['dbname'],
+        user=pgo.params['user'],
+        password=pgo.params['password'],
+        shp=import_shp,
+        schema=schema,
+        tbl_name=import_shp[:-4]
+    )
     subprocess.call(cmd, shell=True)
 
 
