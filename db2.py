@@ -5,7 +5,8 @@ import time
 import pandas as pd
 from collections import defaultdict, namedtuple
 import sys
-
+import copy_schema_between_pg_databases as pg_io
+import pg_import_export_shps as pg_shp
 
 def timeDec(method):
     def timed(*args, **kw):
@@ -52,7 +53,7 @@ class PostgresDb(object):
             cur.execute(qry)
             if cur.description:
                 columns = [desc[0] for desc in cur.description]
-                data = [i[0] for i in cur.fetchall()]
+                data = cur.fetchall()
             else:
                 data = None
                 columns = None
@@ -127,7 +128,7 @@ class SqlDb(object):
             cur.execute(qry)
             if cur.description:
                 columns = [desc[0] for desc in cur.description]
-                data = [i[0] for i in cur.fetchall()]
+                data = cur.fetchall()
             else:
                 data = None
                 columns = None
