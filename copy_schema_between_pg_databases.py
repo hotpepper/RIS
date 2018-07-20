@@ -1,4 +1,4 @@
-from db2 import PostgresDb
+# from db2 import PostgresDb
 import os
 
 def copy_schema_between_pg_databases(pg_org, pg_dest, table_name, table_schema, dest_schema=None, dest_table_name=None):
