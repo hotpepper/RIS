@@ -46,17 +46,17 @@ def export_data_from_pg(pg, table_schema, table_name, seperator='|'):
         cur.copy_to(f, '{}.{}'.format(table_schema, table_name), sep=seperator, null='')
 
         
-def add_data_to_pg(pg, dest_table_name, dest_schema=None, seperator='|'):
+def add_data_to_pg(pg, dest_table_name, dest_schema=None, seperator='|', tbl='temp_table.csv'):
     """
     assumes tables exist with correct schema
     :return:
     """
     loc_table = dest_schema.lower()+'.'+dest_table_name.lower()
     cur = pg.conn.cursor()
-    with open('temp_table.csv') as f:
+    with open(tbl) as f:
         cur.copy_from(f, loc_table, sep=seperator, null='')
     pg.conn.commit()
-    os.remove(os.path.join(os.getcwd(), 'temp_table.csv'))  # clean up after yourself in the folder
+    os.remove(os.path.join(os.getcwd(), tbl))  # clean up after yourself in the folder
 
 
 def copy_data_between_pg_databases(pg_org, pg_dest, table_name, table_schema, dest_schema=None, dest_table_name=None):
