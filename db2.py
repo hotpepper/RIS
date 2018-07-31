@@ -19,7 +19,8 @@ def timeDec(method):
 
 
 class PostgresDb(object):
-    def __init__(self, host, db_name, user=None, db_pass=None):
+    def __init__(self, host, db_name, user=None, db_pass=None, quiet=False):
+        self.quiet = quiet
         self.params = {
             'dbname': db_name,
             'user': user,
@@ -44,7 +45,7 @@ class PostgresDb(object):
     def dbClose(self):
         self.conn.close()
         
-    def query(self, qry, columns=False):
+    def query(self, qry):
         output = namedtuple('output', 'data, columns')
         cur = self.conn.cursor()
         qry = qry.replace('%', '%%')
@@ -58,7 +59,8 @@ class PostgresDb(object):
                 data = None
                 columns = None
                 self.conn.commit()
-                print 'Update sucessfull'
+                if not self.quiet:
+                    print 'Update sucessfull'
             del cur
             if columns:
                 return output(data=data, columns=columns)
@@ -71,7 +73,7 @@ class PostgresDb(object):
             self.conn.rollback()
             del cur
             sys.exit()
-            return output(data=None, columns=None)
+
 
     def import_table(self, table_name, csv, seperator=','):
         cur = self.conn.cursor() 
@@ -88,7 +90,8 @@ class PostgresDb(object):
 
 
 class SqlDb(object):
-    def __init__(self, db_server, db_name, user=None, db_pass=None):
+    def __init__(self, db_server, db_name, user=None, db_pass=None, quiet=False):
+        self.quiet = quiet
         self.params = {
             'DRIVER': 'SQL Server',
             'DATABASE': db_name,
@@ -119,7 +122,7 @@ class SqlDb(object):
     def dbClose(self):
         self.conn.close()
 
-    def query(self, qry, columns=False):
+    def query(self, qry):
         output = namedtuple('output', 'data, columns')
         cur = self.conn.cursor()
         qry = qry.replace('%', '%%')
@@ -133,7 +136,8 @@ class SqlDb(object):
                 data = None
                 columns = None
                 self.conn.commit()
-                print 'Update sucessfull'
+                if not self.quiet:
+                    print 'Update sucessfull'
             del cur
             if columns:
                 return output(data=data, columns=columns)
@@ -146,7 +150,6 @@ class SqlDb(object):
             self.conn.rollback()
             del cur
             sys.exit()
-            return output(data=None, columns=None)
 
 
 def data_to_dict_data(data, columns):
