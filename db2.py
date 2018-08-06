@@ -19,8 +19,12 @@ def timeDec(method):
 
 
 class PostgresDb(object):
-    def __init__(self, host, db_name, user=None, db_pass=None, quiet=False):
-        self.quiet = quiet
+    def __init__(self, host, db_name, user=None, db_pass=None):
+        self.quiet = raw_input('Quiet mode on <Y/N>?\n').upper()
+        if self.quiet == 'Y':
+            self.quiet = True
+        else:
+            quiet = False
         self.params = {
             'dbname': db_name,
             'user': user,
@@ -90,8 +94,12 @@ class PostgresDb(object):
 
 
 class SqlDb(object):
-    def __init__(self, db_server, db_name, user=None, db_pass=None, quiet=False):
-        self.quiet = quiet
+    def __init__(self, db_server, db_name, user=None, db_pass=None):
+        self.quiet = raw_input('Quiet mode on <Y/N>?\n').upper()
+        if self.quiet == 'Y':
+            self.quiet = True
+        else:
+            quiet = False
         self.params = {
             'DRIVER': 'SQL Server',
             'DATABASE': db_name,
@@ -163,9 +171,8 @@ def data_to_dict_data(data, columns):
 
 
 def query_to_table(db, qry):
-    data, col = db.query(qry, True) # run query
-    dd = data_to_dict_data(data, col) # convert to dictionary
-    df = pd.DataFrame(dd, columns=col) # convert to pandas dataframe
+    data, col = db.query(qry)  # run query
+    dd = data_to_dict_data(data, col)  # convert to dictionary
+    df = pd.DataFrame(dd, columns=col)  # convert to pandas dataframe
     return df
 
-    
