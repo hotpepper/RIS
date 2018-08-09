@@ -219,7 +219,10 @@ class Intersection(object):
                 self.storage['x'] = int(self.json['XCoordinate'])
                 self.storage['y'] = int(self.json['YCoordinate'])
                 self.storage['lion node'] = self.json['LionNodeNumber']
-                self.storage['zip code'] = self.json['ZipCode']
+                if 'ZipCode' in self.json:
+                    self.storage['zip code'] = self.json['ZipCode']
+                else:
+                    self.storage['zip code'] = None
                 self.storage['community district'] = self.json[u'CommunityDistrict'][u'BoroughCode'] + \
                                                      self.json[u'CommunityDistrict'][u'DistrictNumber']
 
@@ -238,7 +241,10 @@ class Addrresses(object):
     def __init__(self, house_number, street, boro):
         self.dir = 'N'
         self.HouseNumber = str(house_number).replace('-', '')
-        self.HouseNumber = str(int(float(self.HouseNumber))).replace('.', '')
+        try:
+            self.HouseNumber = str(int(float(self.HouseNumber))).replace('.', '')
+        except:
+            self.HouseNumber = ''
         self.Street = street
         self.Borough = boro
         self.json = None
@@ -348,7 +354,10 @@ class Node(object):
             self.storage['x'] = int(self.json['XCoordinate'])
             self.storage['y'] = int(self.json['YCoordinate'])
             self.storage['lion node'] = self.json['LionNodeNumber']
-            self.storage['zip code'] = self.json['ZipCode']
+            if 'ZipCode' in self.json:
+                self.storage['zip code'] = self.json['ZipCode']
+            else:
+                self.storage['zip code'] = None
             self.storage['community district'] = self.json[u'CommunityDistrict'][u'BoroughCode'] + \
                                                  self.json[u'CommunityDistrict'][u'DistrictNumber']
 
