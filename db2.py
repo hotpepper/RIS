@@ -19,20 +19,16 @@ def timeDec(method):
 
 
 class PostgresDb(object):
-    def __init__(self, host, db_name, user=None, db_pass=None):
-        self.quiet = raw_input('Quiet mode on <Y/N>?\n').upper()
-        if self.quiet == 'Y':
-            self.quiet = True
-        else:
-            quiet = False
+    def __init__(self, host, db_name, **kwargs):  # user=None, db_pass=None):
+        self.quiet = kwargs.get('quiet', False)
         self.params = {
             'dbname': db_name,
-            'user': user,
-            'password': db_pass,
+            'user': kwargs.get('user', None),
+            'password': kwargs.get('db_pass', None),
             'host': host,
             'port': 5432
         }
-        if not db_pass:
+        if not kwargs.get('db_pass', None):
             self.db_login()
         self.conn = psycopg2.connect(**self.params)
 
@@ -42,13 +38,13 @@ class PostgresDb(object):
                 self.params['dbname'])).lower()
         self.params['password'] = getpass.getpass('Password ({})'.format(
             self.params['dbname']))
-        
+
     def dbConnect(self):
         self.conn = psycopg2.connect(**self.params)
 
     def dbClose(self):
         self.conn.close()
-        
+
     def query(self, qry):
         output = namedtuple('output', 'data, columns')
         cur = self.conn.cursor()
@@ -80,34 +76,30 @@ class PostgresDb(object):
 
 
     def import_table(self, table_name, csv, seperator=','):
-        cur = self.conn.cursor() 
+        cur = self.conn.cursor()
         with open(csv) as f:
             cur.copy_from(f, table_name, sep=seperator, null='')
         print '{} imported to {}'.format(csv, table_name)
         self.conn.commit()
-    
+
     def export_table(self, table_name, csv, seperator=','):
-        cur = self.conn.cursor() 
+        cur = self.conn.cursor()
         with open(csv) as f:
             cur.copy_to(f, table_name, sep=seperator, null='')
         print '{} exported to {}'.format(csv, table_name)
 
 
 class SqlDb(object):
-    def __init__(self, db_server, db_name, user=None, db_pass=None):
-        self.quiet = raw_input('Quiet mode on <Y/N>?\n').upper()
-        if self.quiet == 'Y':
-            self.quiet = True
-        else:
-            quiet = False
+    def __init__(self, db_server, db_name, **kwargs):  # user=None, db_pass=None):
+        self.quiet = kwargs.get('quiet', False)
         self.params = {
             'DRIVER': 'SQL Server',
             'DATABASE': db_name,
-            'UID': user,#raw_input('User name (SQL):'),
-            'PWD': db_pass,#getpass.getpass('Password (SQL)'),
+            'UID': kwargs.get('user', None),
+            'PWD': kwargs.get('db_pass', None),
             'SERVER': db_server
         }
-        if not db_pass:
+        if not kwargs.get('db_pass', None):
             self.db_login()
         self.dbConnect()
 
