@@ -1,6 +1,7 @@
 # from db2 import PostgresDb
 import os
 
+
 def copy_schema_between_pg_databases(pg_org, pg_dest, table_name, table_schema, dest_schema=None, dest_table_name=None):
     if not dest_schema:
         dest_schema = 'public'
@@ -17,9 +18,10 @@ def copy_schema_between_pg_databases(pg_org, pg_dest, table_name, table_schema, 
         dest_schema = 'public'
     if not dest_table_name:
         dest_table_name = table_name
-    pg_dest.query("Drop table if exists {}.{}".format(dest_schema, dest_table_name), True)
+    pg_dest.query("Drop table if exists {}.{}".format(dest_schema, dest_table_name))
     # add 1st column
-    pg_dest.query("Create table {}.{} ({} {})".format(dest_schema, dest_table_name, schema.data[0][0], schema.data[0][1]), True)
+    pg_dest.query("Create table {}.{} ({} {})".format(
+        dest_schema, dest_table_name, schema.data[0][0], schema.data[0][1]))
     # add the rest of the columns
     for (c, t, l) in schema.data[1:]:
         if c == 'geom':
@@ -28,7 +30,7 @@ def copy_schema_between_pg_databases(pg_org, pg_dest, table_name, table_schema, 
                                         WHERE f_table_name = '{}' and f_table_schema = '{}'
                                         and f_geometry_column = 'geom';""".format(table_name, table_schema))
             t = 'geometry({},2263)'.format(geo_type.data[0][0])
-        pg_dest.query("alter table {}.{} add  column {} {}".format(dest_schema, dest_table_name, c, t), True)
+        pg_dest.query("alter table {}.{} add  column {} {}".format(dest_schema, dest_table_name, c, t))
         if c == 'geom':
             print 'Indexing geometry field\n'
             pg_dest.query("CREATE INDEX {tbl}_gist ON {tbl} USING gist (geom);".format(tbl=dest_table_name))
@@ -68,7 +70,8 @@ def copy_data_between_pg_databases(pg_org, pg_dest, table_name, table_schema, de
     add_data_to_pg(pg_dest, dest_table_name, dest_schema, '|')
     if raw_input('Grant permissions to public (Y/N)?\n').upper() == 'Y':
         pg_dest.query('GRANT ALL ON {}.{} TO PUBLIC;'.format(dest_schema, dest_table_name))
-    print 'Transfered data from {} {} to {} {}'.format(pg_org.params['dbname'], table_name, pg_dest.params['dbname'], dest_table_name)
+    print 'Transfered data from {} {} to {} {}'.format(
+        pg_org.params['dbname'], table_name, pg_dest.params['dbname'], dest_table_name)
 
 
 def defaults(schema):

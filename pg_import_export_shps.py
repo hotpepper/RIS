@@ -1,19 +1,24 @@
 import os
 import subprocess
 
-def export_pg_table_to_shp(export_path, pgo, pgtable_name, pgschema=None, pg_sql_select=None):
+
+def export_pg_table_to_shp(export_path, pgo, pgtable_name, **kwargs):  # pgschema=None, pg_sql_select=None):
     """
         source: https://gist.github.com/justinlewis/4398913
     """
-    if not pgschema:
-        pgschema = 'public'
-    if not pg_sql_select:
-        pg_sql_select = 'select * from {}.{}'.format(pgschema, pgtable_name)
+    pgschema = kwargs.get('pgschema', 'public')
+    pg_sql_select = kwargs.get('pgschema', 'select * from {}.{}'.format(pgschema, pgtable_name))
+    shp_name = kwargs.get('shp_name', pgtable_name)
+    # if not pgschema:
+    #     pgschema = 'public'
+    # if not pg_sql_select:
+    #     pg_sql_select = 'select * from {}.{}'.format(pgschema, pgtable_name)
 
-    cmd = 'ogr2ogr -overwrite -f \"ESRI Shapefile\" {export_path}{pgtable_name}.shp ' \
+    cmd = 'ogr2ogr -overwrite -f \"ESRI Shapefile\" {export_path}{shpname}.shp ' \
           'PG:"host={host} user={username} dbname={db} ' \
           'password={password}" -sql "{pg_sql_select}"'.format(pgtable_name=pgtable_name,
                                                                export_path=export_path,
+                                                               shpname=shp_name,
                                                                host=pgo.params['host'],
                                                                username=pgo.params['user'],
                                                                db=pgo.params['dbname'],
