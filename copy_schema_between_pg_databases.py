@@ -1,7 +1,6 @@
 # from db2 import PostgresDb
 import os
 
-
 def copy_schema_between_pg_databases(pg_org, pg_dest, table_name, table_schema, dest_schema=None, dest_table_name=None):
     if not dest_schema:
         dest_schema = 'public'
@@ -95,11 +94,11 @@ def run_full_copy(pg_orgin, pg_destination, org_schema, dest_schema, org_table, 
     copy_data_between_pg_databases(pg_orgin, pg_destination, org_table, org_schema, dest_schema, dest_table)
     
 
-def connection_ui():
+def connection_ui(pgdb):
     org_server = raw_input('\nOrigin server name:\n')
     org_db = raw_input('\nOrigin databse name:\n')
     org_user = raw_input('\nOrigin db login user name:\n')
-    pg_org = PostgresDb(org_server, org_db, org_user)
+    pg_org = pgdb(org_server, org_db, user=org_user)
     org_schema = raw_input('\nOrigin schema name:\n')
     org_table = raw_input('\nOrigin table name:\n')
 
@@ -114,7 +113,7 @@ def connection_ui():
     if dest_user.lower() == 'same':
         dest_user = org_user
         dest_pass = pg_org.params['password']
-    pg_dest = PostgresDb(dest_server, dest_db, dest_user, dest_pass)
+    pg_dest = pgdb(dest_server, dest_db, user=dest_user, db_pass=dest_pass)
     dest_schema = raw_input("\nDestination schema name (type 'same' to reuse schema from origin):\n")
     if dest_schema.lower() == 'same':
         dest_schema = org_schema

@@ -3,7 +3,7 @@ import datetime
 import os
 import getpass
 SREFERENCE = r'\\Dot55fp05\botplan\RIS\Data\Streets\LION\LION_Wild\17D\lion.shp'
-GDB = r'\\dot55fp05\botplan\RIS\Data\Streets\LION\LION_Wild\17D\lion.gdb'
+GDB = r'\\dot55fp05\botplan\RIS\Data\Streets\LION\LION_Wild\17D\lion\lion.gdb'
 
 
 def guess_field_types(headers, data):

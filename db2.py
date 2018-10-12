@@ -168,3 +168,5 @@ def query_to_table(db, qry):
     df = pd.DataFrame(dd, columns=col)  # convert to pandas dataframe
     return df
 
+def copy_table():
+    pg_io.connection_ui(PostgresDb)
