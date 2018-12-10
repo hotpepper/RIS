@@ -19,6 +19,14 @@ def timeDec(method):
 
 
 class PostgresDb(object):
+    """
+    Database connection helper fucntion for PostgreSQL
+     :host param: server path
+     :db_name param: database name
+     :user kwarg: username
+     :db_pass kwarg: password
+     :quiet kwarg: turns off print statments, useful for multiple writes
+    """
     def __init__(self, host, db_name, **kwargs):  # user=None, db_pass=None):
         self.quiet = kwargs.get('quiet', False)
         self.params = {
@@ -90,6 +98,14 @@ class PostgresDb(object):
 
 
 class SqlDb(object):
+    """
+        Database connection helper fucntion for PostgreSQL
+         :db_server param: server path
+         :db_name param: database name
+         :user kwarg: username
+         :db_pass kwarg: password
+         :quiet kwarg: turns off print statments, useful for multiple writes
+        """
     def __init__(self, db_server, db_name, **kwargs):  # user=None, db_pass=None):
         self.quiet = kwargs.get('quiet', False)
         self.params = {
@@ -167,6 +183,7 @@ def query_to_table(db, qry):
     dd = data_to_dict_data(data, col)  # convert to dictionary
     df = pd.DataFrame(dd, columns=col)  # convert to pandas dataframe
     return df
+
 
 def copy_table():
     pg_io.connection_ui(PostgresDb)

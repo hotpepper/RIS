@@ -25,7 +25,8 @@ f.close()
 folders = [
     'DATA',
     'ARCHIVE',
-    'DOCUMENTATION'
+    'DOCUMENTATION',
+    'MISC'
 ]
 for i in folders:
     os.makedirs(i)
