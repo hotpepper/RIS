@@ -99,7 +99,7 @@ class PostgresDb(object):
 
 class SqlDb(object):
     """
-        Database connection helper fucntion for PostgreSQL
+        Database connection helper fucntion for MS SQL server
          :db_server param: server path
          :db_name param: database name
          :user kwarg: username
