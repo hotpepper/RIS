@@ -1,6 +1,7 @@
 # from db2 import PostgresDb
 import os
 
+
 def copy_schema_between_pg_databases(pg_org, pg_dest, table_name, table_schema, dest_schema=None, dest_table_name=None):
     if not dest_schema:
         dest_schema = 'public'
@@ -17,7 +18,7 @@ def copy_schema_between_pg_databases(pg_org, pg_dest, table_name, table_schema, 
         dest_schema = 'public'
     if not dest_table_name:
         dest_table_name = table_name
-    pg_dest.query("Drop table if exists {}.{}".format(dest_schema, dest_table_name))
+    pg_dest.query("Drop table if exists {}.{} CASCADE".format(dest_schema, dest_table_name))
     # add 1st column
     pg_dest.query("Create table {}.{} ({} {})".format(
         dest_schema, dest_table_name, schema.data[0][0], schema.data[0][1]))
@@ -29,6 +30,8 @@ def copy_schema_between_pg_databases(pg_org, pg_dest, table_name, table_schema, 
                                         WHERE f_table_name = '{}' and f_table_schema = '{}'
                                         and f_geometry_column = 'geom';""".format(table_name, table_schema))
             t = 'geometry({},2263)'.format(geo_type.data[0][0])
+        if l:
+            t = 'character varying ({})'.format(l)
         pg_dest.query("alter table {}.{} add  column {} {}".format(dest_schema, dest_table_name, c, t))
         if c == 'geom':
             print 'Indexing geometry field\n'
