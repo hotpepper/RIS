@@ -4,5 +4,17 @@ version = pkg_resources.require("ris")[0].version
 
 setup(name='ris',
       version=version,
-      packages=['ris']
+      packages=['ris'],
+      description='Basic modules used by RIS',
+      install_requires=[
+            'psycopg2',
+            'pyodbc',
+            'pandas',
+            'requests',
+            'xlrd',
+            'openpyxl'
+
+      ]
       )
+
+# to package run (setup.py sdist) from cmd
