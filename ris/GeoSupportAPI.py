@@ -69,7 +69,6 @@ class BlockStretch:
             self.Borough = dictionary[self.Borough]
 
     def direction_binary(self, direction):
-        # TODO: add a note to records where direction was guessed!
         print 'Direction Binary Triggered...'
         if direction == 'N':
            direction = 'E'
@@ -149,7 +148,6 @@ class Intersection(object):
             self.version = ''
 
     def direction_binary(self):
-        # TODO: add a note to records where direction was guessed!
         print 'Direction Binary Triggered...'
 
         if self.dir == 'N':
