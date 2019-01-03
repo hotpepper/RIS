@@ -54,7 +54,7 @@ class PostgresDb(object):
         self.conn.close()
 
     def query(self, qry):
-        output = namedtuple('output', 'data, columns')
+        output = namedtuple('output', 'data, columns, desc')
         cur = self.conn.cursor()
         qry = qry.replace('%', '%%')
         qry = qry.replace('-pct-', '%')
@@ -62,18 +62,20 @@ class PostgresDb(object):
             cur.execute(qry)
             if cur.description:
                 columns = [desc[0] for desc in cur.description]
+                desc = cur.description
                 data = cur.fetchall()
             else:
                 data = None
+                desc = None
                 columns = None
                 self.conn.commit()
                 if not self.quiet:
                     print 'Update sucessfull'
             del cur
             if columns:
-                return output(data=data, columns=columns)
+                return output(data=data, columns=columns, desc=desc)
             else:
-                return output(data=data, columns=None)
+                return output(data=data, columns=None, desc=None)
         except:
             print 'Query Failed:\n'
             for i in qry.split('\n'):
@@ -139,7 +141,7 @@ class SqlDb(object):
         self.conn.close()
 
     def query(self, qry):
-        output = namedtuple('output', 'data, columns')
+        output = namedtuple('output', 'data, columns, desc')
         cur = self.conn.cursor()
         qry = qry.replace('%', '%%')
         qry = qry.replace('-pct-', '%')
@@ -147,18 +149,21 @@ class SqlDb(object):
             cur.execute(qry)
             if cur.description:
                 columns = [desc[0] for desc in cur.description]
+                desc = cur.description
                 data = cur.fetchall()
             else:
                 data = None
                 columns = None
+                desc = None
                 self.conn.commit()
                 if not self.quiet:
                     print 'Update sucessfull'
             del cur
             if columns:
-                return output(data=data, columns=columns)
+                return output(data=data, columns=columns, desc=desc)
+                # return output(data=data, columns=columns)
             else:
-                return output(data=data, columns=None)
+                return output(data=data, columns=None, desc=None)
         except:
             print 'Query Failed:\n'
             for i in qry.split('\n'):
