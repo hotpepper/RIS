@@ -111,7 +111,7 @@ class SqlDb(object):
     def __init__(self, db_server, db_name, **kwargs):  # user=None, db_pass=None):
         self.quiet = kwargs.get('quiet', False)
         self.params = {
-            'DRIVER': 'SQL Server',
+            'DRIVER': 'SQL Server', #'SQL Server Native Client 10.0',
             'DATABASE': db_name,
             'UID': kwargs.get('user', None),
             'PWD': kwargs.get('db_pass', None),
@@ -146,10 +146,23 @@ class SqlDb(object):
         qry = qry.replace('%', '%%')
         qry = qry.replace('-pct-', '%')
         try:
+            # TODO: fix this band aide solution - nateive client is required to appropriately handle datetime2 types
+            # reconnect with native driver for desc (datetime2)
+            del cur
+            self.params['DRIVER'] = 'SQL Server Native Client 10.0'
+            self.dbConnect()
+            cur = self.conn.cursor()
             cur.execute(qry)
             if cur.description:
                 columns = [desc[0] for desc in cur.description]
                 desc = cur.description
+                # TODO: fix this band aide solution - SQL server driver is required to appropriately handle byte arrays
+                # reconnect with old driver for data
+                self.params['DRIVER'] = 'SQL Server'
+                self.dbConnect()
+                del cur
+                cur = self.conn.cursor()
+                cur.execute(qry)
                 data = cur.fetchall()
             else:
                 data = None

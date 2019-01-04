@@ -130,9 +130,6 @@ def connection_ui(pgdb):
         run_full_copy(pg_org, pg_dest, org_schema, dest_schema, org_table)
     print 'Done\n'
         
-    
 
-    
 if __name__ == '__main__':
     connection_ui()
-

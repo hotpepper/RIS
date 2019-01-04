@@ -26,7 +26,7 @@ def get_file_loc():
         return filename
         
         
-def read(in_file='',tries=0):
+def read(in_file='', tries=0):
 
     row_cnt=0
     data=[]
