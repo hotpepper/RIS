@@ -50,7 +50,7 @@ def export_data_from_pg(pg, table_schema, table_name, seperator='|'):
         cur.copy_to(f, '{}.{}'.format(table_schema, table_name), sep=seperator, null='')
 
         
-def add_data_to_pg(pg, dest_table_name, dest_schema=None, seperator='|', tbl='temp_table.csv'):
+def add_data_to_pg(pg, dest_table_name, dest_schema=None, seperator='|', tbl='temp_table.csv', null=''):
     """
     assumes tables exist with correct schema
     :return:
@@ -58,7 +58,7 @@ def add_data_to_pg(pg, dest_table_name, dest_schema=None, seperator='|', tbl='te
     loc_table = dest_schema.lower()+'.'+dest_table_name.lower()
     cur = pg.conn.cursor()
     with open(tbl) as f:
-        cur.copy_from(f, loc_table, sep=seperator, null='')
+        cur.copy_from(f, loc_table, sep=seperator, null=null)
     pg.conn.commit()
     os.remove(os.path.join(os.getcwd(), tbl))  # clean up after yourself in the folder
 
