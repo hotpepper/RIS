@@ -6,6 +6,7 @@ import pandas as pd
 from collections import defaultdict, namedtuple
 import sys
 import copy_schema_between_pg_databases as pg_io
+import copy_table_from_sql_to_pg as d2d
 import pg_import_export_shps as pg_shp
 
 def timeDec(method):
@@ -197,7 +198,7 @@ def data_to_dict_data(data, columns):
 
 
 def query_to_table(db, qry):
-    data, col = db.query(qry)  # run query
+    data, col = db.query(qry).data, db.query(qry).columns  # run query
     dd = data_to_dict_data(data, col)  # convert to dictionary
     df = pd.DataFrame(dd, columns=col)  # convert to pandas dataframe
     return df
@@ -205,3 +206,7 @@ def query_to_table(db, qry):
 
 def copy_table():
     pg_io.connection_ui(PostgresDb)
+
+
+def copy_table_from_sql():
+    d2d.connection_ui()

@@ -1,4 +1,5 @@
-from ris import db2, csvIO
+from ris import csvIO
+from ris.db2 import pg_io
 import decimal
 import datetime
 import os
@@ -45,7 +46,7 @@ def add_table_to_pgsql(pg, pg_schema, pg_table, table_data, archive=False, permi
     pg.query("drop table if exists {s}.{t}".format(t=pg_table, s=pg_schema))
     pg.query(build_table(pg_schema, pg_table, table_data))
     path = os.path.join(os.getcwd(), 'data.csv')
-    db2.pg_io.add_data_to_pg(pg, pg_table, pg_schema, '|', path, 'NULL')
+    pg_io.add_data_to_pg(pg, pg_table, pg_schema, '|', path, 'NULL')
     if not permission_default:
         if raw_input('Grant permissions to public (Y/N)?\n').upper() == 'Y':
             pg.query('GRANT ALL ON {}.{} TO PUBLIC;'.format(pg_schema, pg_table))
