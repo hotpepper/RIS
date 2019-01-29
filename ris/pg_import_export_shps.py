@@ -24,7 +24,16 @@ def export_pg_table_to_shp(export_path, pgo, pgtable_name, **kwargs):  # kwargs:
                                                                db=pgo.params['dbname'],
                                                                password=pgo.params['password'],
                                                                pg_sql_select=pg_sql_select)
-    print cmd
+    print 'ogr2ogr -overwrite -f \"ESRI Shapefile\" \"{export_path}\{shpname}.shp\" ' \
+          'PG:"host={host} user={username} dbname={db} ' \
+          'password={password}" -sql "{pg_sql_select}"'.format(pgtable_name=pgtable_name,
+                                                               export_path=export_path,
+                                                               shpname=shp_name,
+                                                               host=pgo.params['host'],
+                                                               username=pgo.params['user'],
+                                                               db=pgo.params['dbname'],
+                                                               password='*'*len(pgo.params['password']),
+                                                               pg_sql_select=pg_sql_select)
     os.system(cmd)
     print 'Done!'
 
