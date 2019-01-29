@@ -9,6 +9,7 @@ import copy_schema_between_pg_databases as pg_io
 import copy_table_from_sql_to_pg as d2d
 import pg_import_export_shps as pg_shp
 
+
 def timeDec(method):
     def timed(*args, **kw):
         ts = time.time()
@@ -85,7 +86,6 @@ class PostgresDb(object):
             del cur
             sys.exit()
 
-
     def import_table(self, table_name, csv, seperator=','):
         cur = self.conn.cursor()
         with open(csv) as f:
@@ -112,7 +112,7 @@ class SqlDb(object):
     def __init__(self, db_server, db_name, **kwargs):  # user=None, db_pass=None):
         self.quiet = kwargs.get('quiet', False)
         self.params = {
-            'DRIVER': 'SQL Server', #'SQL Server Native Client 10.0',
+            'DRIVER': 'SQL Server',  # 'SQL Server Native Client 10.0',
             'DATABASE': db_name,
             'UID': kwargs.get('user', None),
             'PWD': kwargs.get('db_pass', None),
