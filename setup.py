@@ -3,7 +3,7 @@ from distutils.core import setup
 # version = pkg_resources.require("ris")[0].version
 
 setup(name='ris',
-      version='1.3',
+      version='1.3.2',
       packages=['ris'],
       description='Basic modules used by RIS',
       install_requires=[

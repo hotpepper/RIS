@@ -38,21 +38,30 @@ def export_pg_table_to_shp(export_path, pgo, pgtable_name, **kwargs):  # kwargs:
     print 'Done!'
 
 
-def import_shp_to_pg(import_shp, pgo, schema='public', gdal_data=r"C:\Program Files (x86)\GDAL\gdal-data"):
+def import_shp_to_pg(import_shp, pgo, schema='public', precision=False,
+                     gdal_data=r"C:\Program Files (x86)\GDAL\gdal-data"):
+    if precision:
+        precision = '-lco precision=NO'
+    else:
+        precision = ''
     cmd = 'ogr2ogr --config GDAL_DATA "{gdal_data}" -nlt PROMOTE_TO_MULTI -overwrite -a_srs ' \
           'EPSG:{srid} -progress -f "PostgreSQL" PG:"host={host} port=5432 dbname={dbname} ' \
-          'user={user} password={password}" "{shp}" -nln {schema}.{tbl_name}'.format(
-        gdal_data=gdal_data,
-        srid='2263',
-        host=pgo.params['host'],
-        dbname=pgo.params['dbname'],
-        user=pgo.params['user'],
-        password=pgo.params['password'],
-        shp=import_shp,
-        schema=schema,
-        tbl_name=import_shp[:-4]
-    )
+          'user={user} password={password}" "{shp}" -nln {schema}.{tbl_name} {perc} '.format(
+            gdal_data=gdal_data,
+            srid='2263',
+            host=pgo.params['host'],
+            dbname=pgo.params['dbname'],
+            user=pgo.params['user'],
+            password=pgo.params['password'],
+            shp=import_shp,
+            schema=schema,
+            tbl_name=os.path.basename(import_shp).replace('.shp',''),
+            perc=precision
+            )
     subprocess.call(cmd, shell=True)
+    if raw_input('Grant permissions to public? <Y/N>\n').upper() == 'Y':
+        pgo.query("GRANT ALL ON {s}.{t} TO PUBLIC;".format(
+            s=schema, t=os.path.basename(import_shp).replace('.shp', '')))
 
 
 def import_from_gdb_to_pg(gdb, feature, pgo, gdal_data=r"C:\Program Files (x86)\GDAL\gdal-data"):
