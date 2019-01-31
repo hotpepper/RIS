@@ -31,9 +31,10 @@ class PostgresDb(object):
      :db_pass kwarg: password
      :quiet kwarg: turns off print statments, useful for multiple writes
     """
-    def __init__(self, host, db_name, **kwargs):  # user=None, db_pass=None, label=True):
+    def __init__(self, host, db_name, **kwargs):  # user=None, db_pass=None, label=True, permission=True):
         self.quiet = kwargs.get('quiet', False)
-        self.label = kwargs.get('label', False)
+        self.label = kwargs.get('label', True)
+        self.permission = kwargs.get('permission', True)
         self.params = {
             'dbname': db_name,
             'user': kwargs.get('user', None),
@@ -57,6 +58,25 @@ class PostgresDb(object):
 
     def dbClose(self):
         self.conn.close()
+
+    def permissions(self, qry):
+        if qry.lower().find('create table') > 0:
+            # find all create table expressions
+            # TODO: Add select into catch
+            rgx = r"create\s+(table|view)\s+(as|.*?)(\.|.*?)\s+"
+            finds = re.findall(rgx, qry.lower())  # [('type', '', 'schema.table')]
+            for row in finds:
+                typ = row[0]  # table or view
+                schema = lambda r: r.split('.')[0] if len(r.split('.')) > 1 else 'public'
+                table = row[2].split('.')[-1]
+
+                q = """grant all on {s}.{t} to public;""".format(
+                    s=schema(row[2]),
+                    t=table
+                )
+                cur = self.conn.cursor()
+                cur.execute(q)
+                # self.conn.commit()
 
     def label_table(self, qry):
         # parse query for schema and table name
@@ -98,6 +118,8 @@ class PostgresDb(object):
                 columns = None
                 if self.label:
                     self.label_table(qry)
+                if self.permission:
+                    self.permissions(qry)
                 self.conn.commit()
                 if not self.quiet:
                     print 'Update sucessfull'
