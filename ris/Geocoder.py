@@ -7,7 +7,12 @@ import tkMessageBox
 
 
 def run(file_path=None):
-    # get file (excle (old/new) or csv)
+    # Deprecated name run - don't want to break old code
+    geocode(file_path)
+
+
+def geocode(file_path=None):
+    # get file (excel (old/new) or csv)
     if file_path:
         data_file = Df(file_path)
     else:
