@@ -200,9 +200,18 @@ class SqlDb(object):
             # TODO: fix this band aide solution - nateive client is required to appropriately handle datetime2 types
             # reconnect with native driver for desc (datetime2)
             del cur
-            self.params['DRIVER'] = 'SQL Server Native Client 10.0'
-            self.dbConnect()
-            cur = self.conn.cursor()
+            # Need to add try except here - for cases where native client driver is missing
+            try:
+                self.params['DRIVER'] = 'SQL Server Native Client 10.0'
+                self.dbConnect()
+                cur = self.conn.cursor()
+            except:
+                if not self.quiet:
+                    print 'Warning:\n\tMissing SQL Server Native Client 10.0 ' \
+                          'datetime2 will not be interpreted correctly\n'
+                self.params['DRIVER'] = 'SQL Server'
+                self.dbConnect()
+                cur = self.conn.cursor()
             cur.execute(qry)
             if cur.description:
                 columns = [desc[0] for desc in cur.description]
