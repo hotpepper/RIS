@@ -1,4 +1,4 @@
-# from db2 import PostgresDb
+# from ris.db2 import PostgresDb
 import os
 
 
@@ -35,7 +35,8 @@ def copy_schema_between_pg_databases(pg_org, pg_dest, table_name, table_schema, 
         pg_dest.query("alter table {}.{} add  column {} {}".format(dest_schema, dest_table_name, c, t))
         if c == 'geom':
             print 'Indexing geometry field\n'
-            pg_dest.query("CREATE INDEX {tbl}_gist ON {tbl} USING gist (geom);".format(tbl=dest_table_name))
+            pg_dest.query("CREATE INDEX {tbl}_gist ON {sch}.{tbl} USING gist (geom);".format(sch=dest_schema,
+                                                                                             tbl=dest_table_name))
 
     print 'Table {} is done'.format(dest_table_name)
 
@@ -132,4 +133,5 @@ def connection_ui(pgdb):
         
 
 if __name__ == '__main__':
-    connection_ui()
+    from ris.db2 import PostgresDb as pgo
+    connection_ui(pgo)

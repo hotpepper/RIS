@@ -182,8 +182,8 @@ class SqlDb(object):
                 self.params['DATABASE']))
         self.params['PWD'] = getpass.getpass('Password ({})'.format(
             self.params['DATABASE']))
-        # will echo in idle, push pass off screen
-        print '\n'*1000
+        # # will echo in idle, push pass off screen
+        # print '\n'*1000
 
     def dbConnect(self):
         self.conn = pyodbc.connect(**self.params)
