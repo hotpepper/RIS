@@ -44,7 +44,7 @@ def export_pg_table_to_shp(export_path, pgo, pgtable_name, **kwargs):  # kwargs:
 
 
 def get_geom_column(dbo, schema, table):
-    d = dbo.query("select * from {s}.{t} limit 0".format(s=schema, t=table))
+    d = dbo.query('select * from {s}."{t}" limit 0'.format(s=schema, t=table))
     geo = None
     for row in d.desc:
         if row.type_code == 26840:
@@ -54,6 +54,7 @@ def get_geom_column(dbo, schema, table):
 
 def import_shp_to_pg(import_shp, pgo, schema='public', precision=False, permission=True,
                      gdal_data=r"C:\Program Files (x86)\GDAL\gdal-data"):
+    import_shp = import_shp.lower()
     if precision:
         precision = '-lco precision=NO'
     else:
@@ -73,9 +74,9 @@ def import_shp_to_pg(import_shp, pgo, schema='public', precision=False, permissi
             perc=precision
             )
     subprocess.call(cmd, shell=True)
-    q = """comment on table {s}.{t} is '{t} created by {u} on {d}  - imported using ris module vesion {v}'""".format(
+    q = """comment on table {s}."{t}" is '{t} created by {u} on {d}  - imported using ris module vesion {v}'""".format(
                     s=schema,
-                    t=os.path.basename(import_shp).replace('.shp',''),
+                    t=os.path.basename(import_shp).replace('.shp','').lower(),
                     u=getpass.getuser(),
                     d=datetime.datetime.now().strftime('%Y-%m-%d %H:%M'),
                     v=ris.__version__
@@ -83,13 +84,13 @@ def import_shp_to_pg(import_shp, pgo, schema='public', precision=False, permissi
     pgo.query(q)
     print 'Indexing...'
     geo = get_geom_column(pgo, schema, os.path.basename(import_shp).replace('.shp', ''))
-    pgo.query("CREATE INDEX {t}_geom_gist ON {s}.{t} USING gist ({g});".format(
+    pgo.query('CREATE INDEX "{t}_geom_gist" ON {s}."{t}" USING gist ({g});'.format(
         t=os.path.basename(import_shp).replace('.shp', ''),
         s=schema,
         g=geo
     ))
     if permission:
-        pgo.query("grant all on {s}.{t} to public;".format(
+        pgo.query('grant all on {s}."{t}" to public;'.format(
             s=schema, t=os.path.basename(import_shp).replace('.shp', '')))
 
 
@@ -108,7 +109,7 @@ def import_from_gdb_to_pg(gdb, feature, pgo, schema='public', permission=True,
                                                             sch=schema
                                                             )
     subprocess.call(cmd, shell=True)
-    q = """comment on table {s}.{t} is '{t} created by {u} on {d} - imported using ris module vesion {v}'""".format(
+    q = """comment on table {s}."{t}" is '{t} created by {u} on {d} - imported using ris module vesion {v}'""".format(
         s=schema,
         t=feature,
         u=getpass.getuser(),
@@ -118,11 +119,11 @@ def import_from_gdb_to_pg(gdb, feature, pgo, schema='public', permission=True,
     pgo.query(q)
     print 'Indexing...'
     geo = get_geom_column(pgo, schema, feature)
-    pgo.query("CREATE INDEX {t}_geom_gist ON {s}.{t} USING gist ({g});".format(
+    pgo.query('CREATE INDEX "{t}_geom_gist" ON {s}."{t}" USING gist ({g});'.format(
         t=feature,
         s=schema,
         g=geo
     ))
     if permission:
-        pgo.query("grant all on {s}.{t} to public;".format(
+        pgo.query('grant all on {s}."{t}" to public;'.format(
             s=schema, t=feature))
