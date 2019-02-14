@@ -6,14 +6,16 @@ import os
 
 
 def get_table_from_sql(sql, sql_schema, sql_table):
+    # TODO: add option to pass in query instead of full table
     q = sql.query("""select top 1 * from {db}.{sch}.{tbl}""".format(db=sql.params['DATABASE'],
                                                                     sch=sql_schema,
                                                                     tbl=sql_table))
     path = os.path.join(os.getcwd(), 'data.csv')
 
-    cmd = """sqlcmd -S dotgissql01 -d {db} -U {usr} -P {pas} 
+    cmd = """sqlcmd -S {serv} -d {db} -U {usr} -P {pas} 
     -Q "set nocount on; select * from {db}.{sch}.{tbl}" 
     -o {p} -h-1 -s "|" -W """.format(db=sql.params['DATABASE'],
+                                     serv=sql.params['SERVER'],
                                      pas=sql.params['PWD'],
                                      usr=sql.params['UID'],
                                      sch=sql_schema,
