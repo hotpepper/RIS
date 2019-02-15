@@ -61,14 +61,15 @@ def add_table_to_pgsql(pg, pg_schema, pg_table, table_data, archive=False, permi
 
 def parse_row(row):
     name, typ, disp, intsz, persc, scl, nul = row
-    if typ == unicode:
+    if typ in (str, unicode):
         return "{n} varchar({s})".format(n=name, s=persc)
     elif typ == bytearray:
         return "{n} bytea".format(n=name)
-    elif typ in (decimal.Decimal, int, float):
+    elif typ in (decimal.Decimal, int, float, long):
         return "{n} numeric".format(n=name)
     elif typ == datetime.datetime:
         return "{n} timestamp".format(n=name)
+
 
 
 def build_table(pg_schema, pg_table, table_data):
