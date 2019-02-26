@@ -96,6 +96,8 @@ def parse_row(row):
         return "{n} numeric".format(n=name)
     elif typ == datetime.datetime:
         return "{n} timestamp".format(n=name)
+    elif typ == datetime.date:
+        return "{n} date".format(n=name)
 
 
 
