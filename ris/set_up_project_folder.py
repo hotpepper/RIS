@@ -32,7 +32,8 @@ def make_project_folder(path):
         'DATA',
         'ARCHIVE',
         'DOCUMENTATION',
-        'MISC'
+        'MISC',
+        'CODE'
     ]
     for i in folders:
         if not os.path.isdir(os.path.join(path, i)):

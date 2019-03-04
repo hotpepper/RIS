@@ -4,11 +4,12 @@ import decimal
 import datetime
 import os
 
+TIMESTAMP = datetime.datetime.now().strftime('%Y%m%d%H%M')
+PATH = os.path.join(os.getcwd(), 'data_{}.csv'.format(TIMESTAMP))
 
-def get_table_fromsql_query(sql, qry):
+def get_table_fromsql_query(sql, qry, path=PATH, clean=True):
     # assumes full query including schema etc passed
     q = sql.query("""select top 1 * from ({q}) as q""".format(q=qry))
-    path = os.path.join(os.getcwd(), 'data.csv')
 
     cmd = """sqlcmd -S {serv} -d {db} -U {usr} -P {pas} 
         -Q "set nocount on; select * from ({q}) as q" 
@@ -19,16 +20,16 @@ def get_table_fromsql_query(sql, qry):
                                          q=qry,
                                          p=path)
     os.system(cmd.replace('\n', ' '))
-    clean_output(path)
+    if clean:
+        clean_output(path)
     return q._replace(data=None)
 
 
-def get_table_from_sql(sql, sql_schema, sql_table):
+def get_table_from_sql(sql, sql_schema, sql_table, path=PATH):
     # TODO: add option to pass in query instead of full table
     q = sql.query("""select top 1 * from {db}.{sch}.{tbl}""".format(db=sql.params['DATABASE'],
                                                                     sch=sql_schema,
                                                                     tbl=sql_table))
-    path = os.path.join(os.getcwd(), 'data.csv')
 
     cmd = """sqlcmd -S {serv} -d {db} -U {usr} -P {pas} 
     -Q "set nocount on; select * from {db}.{sch}.{tbl}" 
@@ -55,7 +56,7 @@ def clean_output(path):
     csvIO.write(path, out_data)
 
 
-def add_table_to_pgsql(pg, pg_schema, pg_table, table_data, archive=False, permission_default=False):
+def add_table_to_pgsql(pg, pg_schema, pg_table, table_data, archive=False, permission_default=False, path=PATH):
     if archive:
         exists = pg.query("""SELECT EXISTS (
                             SELECT 1
@@ -74,7 +75,7 @@ def add_table_to_pgsql(pg, pg_schema, pg_table, table_data, archive=False, permi
 
     pg.query("drop table if exists {s}.{t}".format(t=pg_table, s=pg_schema))
     pg.query(build_table(pg_schema, pg_table, table_data))
-    path = os.path.join(os.getcwd(), 'data.csv')
+
     pg_io.add_data_to_pg(pg, pg_table, pg_schema, '|', path, 'NULL')
     if not permission_default:
         if raw_input('Grant permissions to public (Y/N)?\n').upper() == 'Y':
