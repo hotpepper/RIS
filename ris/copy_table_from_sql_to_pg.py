@@ -90,7 +90,10 @@ def add_table_to_pgsql(pg, pg_schema, pg_table, table_data, archive=False, permi
 def parse_row(row):
     name, typ, disp, intsz, persc, scl, nul = row
     if typ in (str, unicode):
-        return "{n} varchar({s})".format(n=name, s=persc)
+        if persc > 0:
+            return "{n} varchar({s})".format(n=name, s=persc)
+        else:
+            return "{n} varchar({s})".format(n=name, s=1)
     elif typ == bytearray:
         return "{n} bytea".format(n=name)
     elif typ in (decimal.Decimal, int, float, long):
@@ -99,6 +102,9 @@ def parse_row(row):
         return "{n} timestamp".format(n=name)
     elif typ == datetime.date:
         return "{n} date".format(n=name)
+    elif typ == bool:
+        return "{n} boolean".format(n=name)
+
 
 
 

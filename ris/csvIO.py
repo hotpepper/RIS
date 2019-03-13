@@ -15,6 +15,7 @@ def write(out_file, data_to_write, header=[]):
             row_cnt+=1
     return str(row_cnt)+" rows were written to "+str(out_file)
 
+
 def get_file_loc():
         '''TK navigate to file for input - used for error input cases'''
         #print '\nNavigate to the file to upload\n'''
@@ -27,7 +28,6 @@ def get_file_loc():
         
         
 def read(in_file='', tries=0):
-
     row_cnt=0
     data=[]
     
